@@ -54,24 +54,9 @@ class PortfolioScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AnimatedBuilder(
-                  animation: const AlwaysStoppedAnimation(1.0),
-                  builder: (context, child) {
-                    return TweenAnimationBuilder(
-                      tween: Tween<double>(begin: 0, end: 1),
-                      duration: const Duration(seconds: 1),
-                      builder: (context, double value, child) {
-                        return Transform.scale(
-                          scale: value,
-                          child: child,
-                        );
-                      },
-                      child: const CircleAvatar(
-                        radius: 80,
-                        backgroundImage: AssetImage('assets/profile.png'),
-                      ),
-                    );
-                  },
+                const CircleAvatar(
+                  radius: 80,
+                  backgroundImage: AssetImage('assets/profile.png'),
                 ),
                 const SizedBox(height: 20),
                 AnimatedBuilder(
