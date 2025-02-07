@@ -287,14 +287,14 @@ class PortfolioScreen extends StatelessWidget {
   }
 
   Widget _buildSkillsSection(BuildContext context) {
-    final List<Map<String, dynamic>> skills = [
-      {'name': 'Flutter', 'level': 0.8},
-      {'name': 'Dart', 'level': 0.8},
-      {'name': 'Flask', 'level': 0.6},
-      {'name': 'Firebase', 'level': 0.6},
-      {'name': 'Git', 'level': 0.7},
-      {'name': 'REST APIs', 'level': 0.6},
-      {'name': 'App Publishing', 'level': 0.7},
+    final List<String> skills = [
+      'Flutter',
+      'Dart',
+      'Flask',
+      'Firebase',
+      'Git',
+      'REST APIs',
+      'App Publishing'
     ];
 
     return Container(
@@ -305,67 +305,49 @@ class PortfolioScreen extends StatelessWidget {
         children: [
           Text('My Skills', style: Theme.of(context).textTheme.displayMedium),
           const SizedBox(height: 20),
-          AnimationLimiter(
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: skills.length,
-              itemBuilder: (context, index) {
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(milliseconds: 375),
-                  child: SlideAnimation(
-                    horizontalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: _buildSkillCard(context, skills[index]),
-                    ),
-                  ),
-                );
-              },
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount = 1; // Default for mobile
+              if (constraints.maxWidth > 900) {
+                crossAxisCount = 3; // Desktop
+              } else if (constraints.maxWidth > 600) {
+                crossAxisCount = 2; // Tablet
+              }
+
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: skills.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 3, // Ensures a balanced card size
+                ),
+                itemBuilder: (context, index) {
+                  return _buildSkillCard(context, skills[index]);
+                },
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSkillCard(BuildContext context, Map<String, dynamic> skill) {
+  Widget _buildSkillCard(BuildContext context, String skill) {
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 10),
       color: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              skill['name'],
-              style: Theme.of(context).textTheme.displaySmall,
-            ),
-            const SizedBox(height: 5),
-            TweenAnimationBuilder(
-              tween: Tween<double>(begin: 0, end: skill['level']),
-              duration: const Duration(seconds: 1),
-              builder: (context, double value, child) {
-                return LinearProgressIndicator(
-                  value: value,
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).colorScheme.secondary),
-                );
-              },
-            ),
-            // const SizedBox(height: 8),
-            // Text(
-            //   '${(skill['level'] * 100).toInt()}%',
-            //   style: TextStyle(
-            //     color: Theme.of(context).colorScheme.secondary,
-            //     fontWeight: FontWeight.bold,
-            //   ),
-            // ),
-          ],
+        child: Center(
+          child: Text(
+            skill,
+            style: Theme.of(context).textTheme.displaySmall,
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );
