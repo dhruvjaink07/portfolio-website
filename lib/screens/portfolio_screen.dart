@@ -3,10 +3,16 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PortfolioScreen extends StatelessWidget {
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _projectsSectionKey = GlobalKey();
+  final GlobalKey _skillsSectionKey = GlobalKey();
+  final GlobalKey _experienceSection = GlobalKey();
+  final GlobalKey _homeSection = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
             _buildHomeSection(context),
@@ -18,11 +24,16 @@ class PortfolioScreen extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: _scrollToHome,
+        child: const Icon(Icons.arrow_upward_rounded),
+      ),
     );
   }
 
   Widget _buildHomeSection(BuildContext context) {
     return Container(
+      key: _homeSection,
       height: MediaQuery.of(context).size.height,
       child: Stack(
         children: [
@@ -129,9 +140,15 @@ class PortfolioScreen extends StatelessWidget {
             spacing: 20, // Horizontal spacing between cards
             runSpacing: 20, // Vertical spacing between rows when wrapped
             children: [
-              _buildStatCard(context, '5+', 'Projects'),
-              _buildStatCard(context, '5+', 'Skills'),
-              _buildStatCard(context, '1', 'Years Exp.'),
+              _buildStatCard(context, '3+', 'Projects', () {
+                _scrollToProjects();
+              }),
+              _buildStatCard(context, '5+', 'Skills', () {
+                _scrollToSkills();
+              }),
+              _buildStatCard(context, '1', 'Years Exp.', () {
+                _scrollToExperience();
+              }),
             ],
           ),
         ],
@@ -139,29 +156,33 @@ class PortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String value, String label) {
-    return Card(
-      elevation: 4,
-      color: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.secondary,
+  Widget _buildStatCard(
+      BuildContext context, String value, String label, VoidCallback? onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 4,
+        color: Theme.of(context).colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -192,6 +213,7 @@ class PortfolioScreen extends StatelessWidget {
     ];
 
     return Container(
+      key: _projectsSectionKey, // Assign key to projects section
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,6 +313,7 @@ class PortfolioScreen extends StatelessWidget {
     ];
 
     return Container(
+      key: _skillsSectionKey,
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -375,6 +398,7 @@ class PortfolioScreen extends StatelessWidget {
     ];
 
     return Container(
+      key: _experienceSection,
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -486,6 +510,29 @@ class PortfolioScreen extends StatelessWidget {
         onTap: onTap,
       ),
     );
+  }
+
+  void _scrollToProjects() {
+    Scrollable.ensureVisible(
+      _projectsSectionKey.currentContext!,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _scrollToSkills() {
+    Scrollable.ensureVisible(_skillsSectionKey.currentContext!,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  void _scrollToExperience() {
+    Scrollable.ensureVisible(_experienceSection.currentContext!,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  void _scrollToHome() {
+    Scrollable.ensureVisible(_homeSection.currentContext!,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   void _launchURL(String url) async {
